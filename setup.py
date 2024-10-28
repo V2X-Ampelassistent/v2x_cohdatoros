@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'GPS_publisher = v2x_cohdatoros.GPS:main',
+            'DSRC_publisher = v2x_cohdatoros.DSRC:main',
         ],
     },
 )
