@@ -90,54 +90,68 @@ class MAPEMPublisher(Node):
                     lane_msg.node_list = MapemNodeList()
                     if 'nodes' in lane_data['nodeList']:
                         lane_msg.node_list.type = 'nodes'
-                        for nodes in lane_data['nodeList'][0]:
+                        for nodes in lane_data['nodeList'][1]:
                             NodeXY = MapemNodeXY()
                             if 'delta' in nodes:
                                 NodeXY.delta = MapemNodeOffsetPointXY()
                                 if 'node-LatLon' in nodes['delta']:
                                     NodeXY.delta.nodelatlon = MapemnodeLatLon()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-LatLon']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-LatLon']['y']
+                                    NodeXY.delta.nodelatlon.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodelatlon.y = nodes['delta'][1]['y']
                                 elif 'node-XY1' in nodes['delta']:
-                                    NodeXY.delta.nodelatlon = MapemnodeXY1()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY1']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY1']['y']
+                                    NodeXY.delta.nodexy1 = MapemnodeXY1()
+                                    NodeXY.delta.nodexy1.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodexy1.y = nodes['delta'][1]['y']
                                 elif 'node-XY2' in nodes['delta']:
-                                    NodeXY.delta.nodelatlon = MapemnodeXY1()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY2']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY2']['y']
+                                    NodeXY.delta.nodexy2 = MapemnodeXY2()
+                                    NodeXY.delta.nodexy2.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodexy2.y = nodes['delta'][1]['y']
                                 elif 'node-XY3' in nodes['delta']:
-                                    NodeXY.delta.nodelatlon = MapemnodeXY1()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY3']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY3']['y']
+                                    NodeXY.delta.nodexy3 = MapemnodeXY3()
+                                    NodeXY.delta.nodexy3.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodexy3.y = nodes['delta'][1]['y']
                                 elif 'node-XY4' in nodes['delta']:
-                                    NodeXY.delta.nodelatlon = MapemnodeXY1()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY4']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY4']['y']
+                                    NodeXY.delta.nodexy4 = MapemnodeXY4()
+                                    NodeXY.delta.nodexy4.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodexy4.y = nodes['delta'][1]['y']
                                 elif 'node-XY5' in nodes['delta']:
-                                    NodeXY.delta.nodelatlon = MapemnodeXY1()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY5']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY5']['y']
+                                    NodeXY.delta.nodexy5 = MapemnodeXY5()
+                                    NodeXY.delta.nodexy5.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodexy5.y = nodes['delta'][1]['y']
                                 elif 'node-XY6' in nodes['delta']:
-                                    NodeXY.delta.nodelatlon = MapemnodeXY1()
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY6']['x']
-                                    NodeXY.delta.nodelatlon.x = nodes['delta']['node-XY6']['y']
+                                    NodeXY.delta.nodexy6 = MapemnodeXY6()
+                                    NodeXY.delta.nodexy6.x = nodes['delta'][1]['x']
+                                    NodeXY.delta.nodexy6.y = nodes['delta'][1]['y']
                             if 'attributes' in nodes:
                                 NodeXY.attributes = MapemNodeAttributeSetXY()
-                                if 'localNode' in nodes['attributes']['localNode']:
-                                    for localnode in nodes['attributes']:
-                                        NodeXY.attributes.localnode.append(localnode)
-                                if 'disabled' in nodes['attributes']['disabled']:
-                                    for disabled in nodes['attributes']:
-                                        NodeXY.attributes.disabled.append(disabled)
-                                if 'enabled' in nodes['attributes']['enabled']:
-                                    for enabled in nodes['attributes']:
-                                        NodeXY.attributes.enabled.append(enabled)
-                                if 'enabled' in nodes['attributes']['enabled']:
-                                    for enabled in nodes['attributes']:
-                                        NodeXY.attributes.enabled.append(enabled)
-                                # TBD: other Cases of attributes..
-                        lane_msg.node_list.nodes.append(NodeXY)
+                                if 'localNode' in nodes['attributes']:
+                                    for localnode in nodes['attributes']['localNode']:
+                                        localnode_msg = MapemNodeAttributesXY()
+                                        localnode_msg.attribute = localnode
+                                        NodeXY.attributes.localnode.append(localnode_msg)
+                                if 'disabled' in nodes['attributes']:
+                                    for disabled in nodes['attributes']['disabled']:
+                                        disabled_msg = MapemSegmentAttributeXY()
+                                        disabled_msg.segmentattribute = disabled
+                                        NodeXY.attributes.disabled.append(disabled_msg)
+                                if 'enabled' in nodes['attributes']:
+                                    for enabled in nodes['attributes']['enabled']:
+                                        enabled_msg = MapemSegmentAttributeXY()
+                                        enabled_msg.segmentattribute = enabled
+                                        NodeXY.attributes.enabled.append(enabled_msg)
+                                #if 'data' in nodes['attributes']:
+                                    # TBD
+                                if 'dWidth' in nodes['attributes']:
+                                    NodeXY.attributes.dwidth = nodes['attributes']['dWidth']
+                                if 'dElevation' in nodes['attributes']:
+                                    NodeXY.attributes.delevation = nodes['attributes']['dElevation']
+                                if 'regional' in nodes['attributes']:
+                                    for regional_data in data.get('regional', []):
+                                        regional_msg = MapemRegional()
+                                        regional_msg.region_id = regional_data.get('regionId', 0)
+                                        regional_msg.reg_ext_value = regional_data.get('regExtValue', '')
+                                        NodeXY.attributes.regional.append(regional_msg)
+                            lane_msg.node_list.nodes.append(NodeXY)
 
 
                 # Connections
