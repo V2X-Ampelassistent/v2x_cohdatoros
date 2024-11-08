@@ -11,7 +11,7 @@ class GPSPublisher(Node):
 
     def __init__(self):
         super().__init__('GPS_Publisher')
-        self.publisher = self.create_publisher(GPS, 'Cohda_Signals', 10)
+        self.publisher = self.create_publisher(GPS, 'Cohda_Signals/GPS', 10)
     
     def send_GPS(self, data):
         msg = GPS()
