@@ -1,5 +1,6 @@
 import socket
 import asn1tools
+from ament_index_python.packages import get_package_share_directory
 
 class UDPService():
     def __init__(self):
@@ -7,12 +8,12 @@ class UDPService():
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Bind any address to port 37008
         self.sock.bind(("0.0.0.0", 37008))
-
+        package_share_directory = get_package_share_directory('v2x_cohdatoros')
         self.asnspec = asn1tools.compile_files(
-            ["/home/zdm/ampelassistent/ROS_ws/src/v2x_cohdatoros/resource/DSRC.asn", 
-             "/home/zdm/ampelassistent/ROS_ws/src/v2x_cohdatoros/resource/ETSI-ITS-CDD.asn",
-             "/home/zdm/ampelassistent/ROS_ws/src/v2x_cohdatoros/resource/MAPEM-PDU-Descriptions.asn", 
-             "/home/zdm/ampelassistent/ROS_ws/src/v2x_cohdatoros/resource/SPATEM-PDU-Descriptions.asn"], 'uper')
+            [package_share_directory + "/resource/DSRC.asn", 
+             package_share_directory + "/resource/ETSI-ITS-CDD.asn",
+             package_share_directory + "/resource/MAPEM-PDU-Descriptions.asn", 
+             package_share_directory + "/resource/SPATEM-PDU-Descriptions.asn"], 'uper')
         # Uncomment the following line for Overview of possible structure:
         # print(self.asnspec.modules['ETSI-ITS-DSRC']['SPAT'])
 
