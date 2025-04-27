@@ -1,13 +1,10 @@
+import rclpy
 import socket
 import asn1tools
 from ament_index_python.packages import get_package_share_directory
 
 class UDPService():
     def __init__(self):
-        # Create socket for IPv6 UDP connection
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # Bind any address to port 37008
-        self.sock.bind(("0.0.0.0", 37008))
         package_share_directory = get_package_share_directory('v2x_cohdatoros')
         self.asnspec = asn1tools.compile_files(
             [package_share_directory + "/resource/DSRC.asn", 
@@ -16,6 +13,17 @@ class UDPService():
              package_share_directory + "/resource/SPATEM-PDU-Descriptions.asn"], 'uper')
         # Uncomment the following line for Overview of possible structure:
         # print(self.asnspec.modules['ETSI-ITS-DSRC']['SPAT'])
+
+    def connect_udp(self, port):
+        # Create socket for IPv6 UDP connection
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Bind any address to given port
+        self.sock.bind(("0.0.0.0", port))
+        # set a timeout
+        self.sock.settimeout(10.0)
+
+    def disconnect_udp(self):
+        self.sock.close()
 
     def _handle_mapem(self, data):
         decoded = False
