@@ -45,7 +45,7 @@ class DSRCHandler(Node):
                     if error == KeyboardInterrupt:
                         sys.exit()
                     else:
-                        self.get_logger().info(error)
+                        self.get_logger().info(str(error))
                     pass
             # disconnect, if a new port has been set.
             self.UDP.disconnect_udp()

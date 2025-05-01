@@ -6,13 +6,14 @@ import json
 from rclpy.node import Node
 from v2x_cohdainterfaces.msg import GPS
 import threading
+from sensor_msgs.msg import NavSatFix
 
 class GPSPublisher(Node):
 
     def __init__(self):
         super().__init__('GPS_Publisher')
         self.declare_parameter('port', 37010)
-        self.publisher = self.create_publisher(GPS, 'Cohda_Signals/GPS', 10)
+        self.publisher = self.create_publisher(NavSatFix, 'Cohda_Signals/GPS', 10)
 
         # start background thread:
         thread = threading.Thread(target=self.listen_to_port)
@@ -20,7 +21,7 @@ class GPSPublisher(Node):
         thread.start()
     
     def send_GPS(self, data):
-        msg = GPS()
+        msg = NavSatFix()
         # decode the Data to a string
         data_string = data.decode('utf-8')
         # split the string after each json (separated by "\r\n")
@@ -30,21 +31,11 @@ class GPSPublisher(Node):
         for json_string in data_list:
             data_json = json.loads(json_string)
             if data_json["class"] == "TPV" and data_json["mode"] == 3:
-                msg.classtype = data_json["class"]
-                msg.device = data_json["device"]
-                msg.mode = data_json["mode"]
-                msg.ept = data_json["ept"]
-                msg.lat = data_json["lat"]
-                msg.lon = data_json["lon"]
-                msg.alt = data_json["alt"]
-                msg.epx = data_json["epx"]
-                msg.epy = data_json["epy"]
-                msg.epv = data_json["epv"]
-                msg.track = data_json["track"]
-                msg.speed = data_json["speed"]
-                msg.climb = data_json["climb"]
-                msg.eps = data_json["eps"]
-                msg.epc = data_json["epc"]
+                msg.latitude = data_json["lat"]
+                msg.longitude = data_json["lon"]
+                msg.altitude = data_json["alt"]
+                msg.header.stamp = self.get_clock().now().to_msg()
+
                 self.publisher.publish(msg)
                 self.get_logger().info('Publishing: %s"' % data)
 
