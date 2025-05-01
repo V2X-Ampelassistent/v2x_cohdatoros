@@ -60,7 +60,6 @@ def main(args=None):
     executor.add_node(Handler.SPATEMPub)
     executor.spin()
     # clean up
-    node.destroy_node()
     rclpy.shutdown()
 
 if __name__ == "__main__":
