@@ -38,6 +38,8 @@ class GPSPublisher(Node):
 
                 self.publisher.publish(msg)
                 self.get_logger().info('Publishing: %s"' % data)
+            else:
+                self.get_logger().info('received GPS in unsupported Mode. No GPS Message published.')
 
     def listen_to_port(self):
         while rclpy.ok():
