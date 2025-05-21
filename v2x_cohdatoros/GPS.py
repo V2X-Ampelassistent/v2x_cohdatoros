@@ -13,7 +13,7 @@ class GPSPublisher(Node):
     def __init__(self):
         super().__init__('GPS_Publisher')
         self.declare_parameter('port', 37010)
-        self.publisher = self.create_publisher(NavSatFix, 'Cohda_Signals/GPS', 10)
+        self.publisher = self.create_publisher(GPS, 'Cohda_Signals/GPS', 10)
 
         # start background thread:
         thread = threading.Thread(target=self.listen_to_port)
@@ -21,7 +21,7 @@ class GPSPublisher(Node):
         thread.start()
     
     def send_GPS(self, data):
-        msg = NavSatFix()
+        msg = GPS()
         # decode the Data to a string
         data_string = data.decode('utf-8')
         # split the string after each json (separated by "\r\n")
@@ -31,10 +31,21 @@ class GPSPublisher(Node):
         for json_string in data_list:
             data_json = json.loads(json_string)
             if data_json["class"] == "TPV" and data_json["mode"] == 3:
-                msg.latitude = data_json["lat"]
-                msg.longitude = data_json["lon"]
-                msg.altitude = data_json["alt"]
-                msg.header.stamp = self.get_clock().now().to_msg()
+                msg.classtype = data_json.get("class")
+                msg.device = data_json.get("device")
+                msg.mode = data_json.get("mode")
+                msg.ept = data_json.get("ept")
+                msg.lat = data_json.get("lat")
+                msg.lon = data_json.get("lon")
+                msg.alt = data_json.get("alt")
+                msg.epx = data_json.get("epx")
+                msg.epy = data_json.get("epy")
+                msg.epv = data_json.get("epv")
+                msg.track = data_json.get("track")
+                msg.speed = data_json.get("speed")
+                msg.climb = data_json.get("climb")
+                msg.eps = data_json.get("eps")
+                msg.epc = data_json.get("epc")
 
                 self.publisher.publish(msg)
                 self.get_logger().info('Publishing: %s"' % data)
